@@ -1,0 +1,11 @@
+---
+# Any role specific variables can be declared here
+java:
+  jdk8:
+    url: https://pasartifacts.domain.com/artifactory/libs-pas/com/oracle/jdk/8u31-linux-x64/jdk-8u31-linux-x64.tar.gz
+    file_name: jdk-8u31-linux-x64.tar.gz
+    path: jdk1.8.0_31
+  jdk7:
+    url: https://pasartifacts.domain.com/artifactory/libs-pas/com/oracle/jdk/7u75-linux-x64/jdk-7u75-linux-x64.tar.gz
+    file_name: jdk-7u75-linux-x64.tar.gz
+    path: jdk1.7.0_75

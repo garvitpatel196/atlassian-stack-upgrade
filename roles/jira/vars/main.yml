@@ -1,0 +1,8 @@
+---
+# Any role specific variables can be declared here
+jira:
+  jira832:
+    url: https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-8.3.2.tar.gz
+    file_name: atlassian-jira-software-8.3.2.tar.gz
+    install_path: /opt/jira/latest
+    home_path: /data/jira_home

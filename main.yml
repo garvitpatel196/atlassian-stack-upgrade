@@ -1,0 +1,3 @@
+---
+- import_playbook: upgrade-jira.yml
+- import_playbook: upgrade-postgres.yml

@@ -1,0 +1,5 @@
+---
+- hosts: jira-servers
+  roles:
+    - openjdk
+    - jira

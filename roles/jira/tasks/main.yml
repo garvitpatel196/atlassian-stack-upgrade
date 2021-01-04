@@ -1,0 +1,28 @@
+---
+# Ansible loads any file called main.yml in a role sub-directory. Write all the tasks here
+
+- name: Create Jira user
+  become: true
+  user:
+    name: jira
+    create_home: yes
+    state: present
+
+- name: jira download url
+  debug: msg=" {{jira[jira_version].url}} "
+
+- name: Create Jira Installation directory if not exists
+  become: true
+  file:
+    path: " {{jira[jira_version].install_path}} "
+    state: directory
+    owner: jira
+    group: jira
+
+- name: Create Jira home directory if not exists
+  become: true
+  file:
+    path: " {{jira[jira_version].home_path}} "
+    state: directory
+    owner: jira
+    group: jira

@@ -1,0 +1,4 @@
+---
+# Any role specific variables can be declared here
+dest:
+  google: www.google.com

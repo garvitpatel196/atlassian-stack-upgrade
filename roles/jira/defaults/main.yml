@@ -1,0 +1,7 @@
+# declare default variables that has lowest priority
+---
+# java_version: jdk8
+# java_user: deploy
+# java_group: deploy
+
+jira_version: jira832

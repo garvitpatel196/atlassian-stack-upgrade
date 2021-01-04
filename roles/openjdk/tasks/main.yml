@@ -1,0 +1,26 @@
+---
+# Ansible loads any file called main.yml in a role sub-directory. Write all the tasks here
+# install Oracle JDK 
+
+# - name: debug
+#   debug: msg=" {{java[java_version].url}} "
+
+# - name: Download Oracle JDK 
+#   get_url: url={{java[java_version].url}} dest=/opt validate_certs=no 
+#   become: true
+
+# - name: Extract JDK
+#   command: /bin/tar xvf /opt/{{java[java_version].file_name}} -C /opt/ creates=/opt/{{java[java_version].path}}
+
+# - name: Change ownership of JDK installation
+#   file: path=/opt/{{java[java_version].path}} owner={{ java_user }} group={{ java_group }} state=directory recurse=yes
+
+# - name: set JAVA home for all users
+#   template: src=jdk.sh.j2 dest=/etc/profile.d/jdk.sh
+- name: Installing Java 1.8 openjdk
+  yum:
+    name: java-1.8.0-openjdk
+    state: present
+
+- name: Check Java Version
+  command: java -version

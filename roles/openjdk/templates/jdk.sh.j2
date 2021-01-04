@@ -1,0 +1,4 @@
+export JAVA_HOME=/opt/{{java[java_version].path}}
+export JRE_HOME=/opt/{{java[java_version].path}}/jre
+export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH
+alternatives --install /usr/bin/java java /opt/{{java[java_version].path}}/bin/java 2
