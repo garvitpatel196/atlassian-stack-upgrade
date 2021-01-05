@@ -1,0 +1,39 @@
+---
+- name: Stop Jira
+  become: true
+  systemd:
+    name: jira
+    state: stopped
+  tags:
+    - stop-jira
+
+- name: Take backup of current install directory
+  become: true
+  archive:
+    path: "{{jira[jira_version].install_path}}"
+    dest: /opt/jira/backup-inst-{{jira_version}}.tgz
+  tags:
+    - backup-old-jira
+
+- name: Take backup of current home directory
+  become: true
+  archive:
+    path: "{{jira[jira_version].home_path}}"
+    dest: /data//backup-home-{{jira_version}}.tgz
+  tags:
+    - backup-old-jira
+
+- name: Change jira_version to new version
+  set_fact:
+    jira_version: "{{upgrade_version}}"
+
+- import_tasks: install-jira.yml
+
+- name: Copy server.xml file
+  become: true
+  copy:
+    src: server.xml
+    dest: '{{jira[jira_version].install_path}}/conf/'
+  tags:
+    - copy-server-file
+# - local_action: lineinfile path=defaults/main.yml regexp='^jira\_version' line='jira_version = {{upgrade_version}}'

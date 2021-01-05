@@ -5,4 +5,15 @@ jira:
     url: https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-8.3.2.tar.gz
     file_name: atlassian-jira-software-8.3.2.tar.gz
     install_path: /opt/jira/jira-{{jira_version}}
-    home_path: /data/jira_home
+    link_path: /opt/jira/latest
+    attachments_path: /data/jira_data_s3
+    home_path: /data/jira_data
+    shared_home_path: /data/jira_data_shared
+  8.13.2:
+    url: https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-8.13.2.tar.gz
+    file_name: atlassian-jira-software-8.13.2.tar.gz
+    install_path: /opt/jira/jira-{{jira_version}}
+    link_path: /opt/jira/latest
+    attachments_path: /data/jira_data_s3
+    home_path: /data/jira_data
+    shared_home_path: /data/jira_data_shared

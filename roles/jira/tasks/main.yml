@@ -1,51 +1,38 @@
 ---
-# Ansible loads any file called main.yml in a role sub-directory. Write all the tasks here
+- import_tasks: upgrade-jira.yml
+  when: is_upgrade | bool
 
-- name: Create Jira user
+- import_tasks: install-jira.yml
+  when: not is_upgrade | bool
+
+- name: Create symbolic link 
   become: true
-  user:
+  file:
+    src: "{{jira[jira_version].install_path}}"
+    dest: "{{jira[jira_version].link_path}}"
+    state: link
+    owner: jira
+    group: jira
+  tags:
+    - create-jira-link
+
+- name: Chown Install directory
+  become: true
+  file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
+
+- name: Start Jira
+  become: true
+  systemd:
     name: jira
-    create_home: yes
-    state: present
+    state: started
+  register: result
+  retries: 3
+  delay: 10
+  until: result is not failed
   tags:
-    - create-jira-user
-
-- name: Create Jira Installation directory if not exists
-  become: true
-  file: path={{jira[jira_version].install_path}} owner=jira group=jira state=directory recurse=yes
-  tags:
-    - create-jira-install-directory
-
-- name: Create Jira home directory if not exists
-  become: true
-  file: path={{jira[jira_version].home_path}} owner=jira group=jira state=directory recurse=yes
-  tags:
-    - create-jira-home-directory
-
-- name: jira download url
-  debug: msg=" {{jira[jira_version].url}} "
-
-- name: Downloading jira
-  become: true
-  get_url: url={{jira[jira_version].url}} dest=/opt validate_certs=no
-  tags:
-    - download-jira
-
-- name: Extract jira
-  become: true
-  command: tar -xvzf /opt/{{jira[jira_version].file_name}} -C {{jira[jira_version].install_path}} --strip-components=1 creates={{jira[jira_version].install_path}}/bin
-  tags:
-    - extract-jira
-
-- name: Set jira.home in Jira_Install_Path/atlassian-jira/WEB-INF/classes/jira-application.properties
-  become: true
-  lineinfile:
-    path: '{{jira[jira_version].install_path}}/atlassian-jira/WEB-INF/classes/jira-application.properties'
-    regexp: '^jira\.home'
-    line: jira.home = {{jira[jira_version].home_path}}
-  tags:
-    - set-jira-home-config
-
+    - start-jira
 
 # - name: Create soft Link latest->new_version
 #   become: true

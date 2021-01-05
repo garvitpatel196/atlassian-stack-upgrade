@@ -15,12 +15,9 @@
                 maxHttpHeaderSize="8192"
                 protocol="HTTP/1.1"
                 useBodyEncodingForURI="true"
-                redirectPort="443"
                 acceptCount="100"
                 disableUploadTimeout="true"
-                bindOnInit="false"
-                scheme="https"
-                proxyPort="443"/>
+                bindOnInit="false"/>
         <Engine name="Catalina" defaultHost="localhost">
             <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
 

@@ -5,3 +5,5 @@
 # java_group: deploy
 
 jira_version: 8.3.2
+is_upgrade: yes
+upgrade_version: 8.13.2
