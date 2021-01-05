@@ -1,0 +1,13 @@
+[Unit] 
+Description=Atlassian Jira
+After=network.target
+
+[Service] 
+Type=forking
+User=jira
+PIDFile=
+ExecStart=
+ExecStop=
+
+[Install] 
+WantedBy=multi-user.target 

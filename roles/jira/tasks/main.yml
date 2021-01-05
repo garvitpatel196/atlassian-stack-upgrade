@@ -7,22 +7,47 @@
     name: jira
     create_home: yes
     state: present
+  tags:
+    - create-jira-user
+
+- name: Create Jira Installation directory if not exists
+  become: true
+  file: path={{jira[jira_version].install_path}} owner=jira group=jira state=directory recurse=yes
+  tags:
+    - create-jira-install-directory
+
+- name: Create Jira home directory if not exists
+  become: true
+  file: path={{jira[jira_version].home_path}} owner=jira group=jira state=directory recurse=yes
+  tags:
+    - create-jira-home-directory
 
 - name: jira download url
   debug: msg=" {{jira[jira_version].url}} "
 
-- name: Create Jira Installation directory if not exists
+- name: Downloading jira
   become: true
-  file:
-    path: " {{jira[jira_version].install_path}} "
-    state: directory
-    owner: jira
-    group: jira
+  get_url: url={{jira[jira_version].url}} dest=/opt validate_certs=no
+  tags:
+    - download-jira
 
-- name: Create Jira home directory if not exists
+- name: Extract jira
   become: true
-  file:
-    path: " {{jira[jira_version].home_path}} "
-    state: directory
-    owner: jira
-    group: jira
+  command: tar -xvzf /opt/{{jira[jira_version].file_name}} -C {{jira[jira_version].install_path}} --strip-components=1 creates={{jira[jira_version].install_path}}/bin
+  tags:
+    - extract-jira
+
+- name: Set jira.home in Jira_Install_Path/atlassian-jira/WEB-INF/classes/jira-application.properties
+  become: true
+  lineinfile:
+    path: '{{jira[jira_version].install_path}}/atlassian-jira/WEB-INF/classes/jira-application.properties'
+    regexp: '^jira\.home'
+    line: jira.home = {{jira[jira_version].home_path}}
+  tags:
+    - set-jira-home-config
+
+
+# - name: Create soft Link latest->new_version
+#   become: true
+#    become_user: jira
+#   command: ln -sfn {{jira[jira_version].install_path}} files

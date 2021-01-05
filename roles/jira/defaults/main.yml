@@ -4,4 +4,4 @@
 # java_user: deploy
 # java_group: deploy
 
-jira_version: jira832
+jira_version: 8.3.2

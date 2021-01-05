@@ -1,0 +1,62 @@
+---
+- name: Copy server.xml file
+  become: true
+  copy:
+    src: server.xml
+    dest: '{{jira[jira_version].install_path}}/conf/'
+  tags:
+    - copy-server-file
+
+- name: Copy jira.service file if not present
+  become: true
+  copy:
+    src: jira.service
+    dest: /lib/systemd/system/
+    force: no
+  tags:
+    - copy-jira-service-file
+
+- name: Changing permission for jira.service file
+  become: true
+  file: 
+    path: /lib/systemd/system/jira.service 
+    mode: 0664
+
+- name: Set PIDFile path
+  become: true
+  lineinfile:
+    path: /lib/systemd/system/jira.service
+    regexp: '^PIDFile'
+    line: PIDFile = {{jira[jira_version].install_path}}/work/catalina.pid
+  tags:
+    - set-jira-service-paths
+
+- name: Set Start file path
+  become: true
+  lineinfile:
+    path: /lib/systemd/system/jira.service
+    regexp: '^ExecStart'
+    line: ExecStart =  {{jira[jira_version].install_path}}/bin/start-jira.sh
+  tags:
+    - set-jira-service-paths
+
+- name: Set Stop file path
+  become: true
+  lineinfile:
+    path: /lib/systemd/system/jira.service
+    regexp: '^ExecStop'
+    line: ExecStop = {{jira[jira_version].install_path}}/bin/stop-jira.sh
+  tags:
+    - set-jira-service-paths
+
+- name: Reload service httpd, in all cases
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start service
+  become: true
+  systemd:
+    name: jira
+    enabled: yes
+    state: started

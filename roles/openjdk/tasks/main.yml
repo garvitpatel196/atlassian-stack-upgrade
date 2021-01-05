@@ -18,6 +18,7 @@
 # - name: set JAVA home for all users
 #   template: src=jdk.sh.j2 dest=/etc/profile.d/jdk.sh
 - name: Installing Java 1.8 openjdk
+  become: true
   yum:
     name: java-1.8.0-openjdk
     state: present
