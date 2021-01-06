@@ -1,40 +1,42 @@
 ---
-- import_tasks: upgrade-jira.yml
-  when: is_upgrade | bool
 
 - import_tasks: install-jira.yml
-  when: not is_upgrade | bool
+  when: is_install | bool
 
-- name: Create symbolic link 
-  become: true
-  file:
-    src: "{{jira[jira_version].install_path}}"
-    dest: "{{jira[jira_version].link_path}}"
-    state: link
-    owner: jira
-    group: jira
-  tags:
-    - create-jira-link
+- import_tasks: add-cluster-node.yml
+  when: add_cluster_nodes | bool
 
-- name: Chown Install directory
-  become: true
-  file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
-  tags:
-    - chown-install-dir
+- import_tasks: upgrade-jira-tasks.yml
+  when: is_upgrade | bool
 
-- name: Start Jira
-  become: true
-  systemd:
-    name: jira
-    state: started
-  register: result
-  retries: 3
-  delay: 10
-  until: result is not failed
-  tags:
-    - start-jira
+# - import_tasks: install-jira.yml
+#   when: not is_upgrade | bool
 
-# - name: Create soft Link latest->new_version
+# - name: Create symbolic link 
 #   become: true
-#    become_user: jira
-#   command: ln -sfn {{jira[jira_version].install_path}} files
+#   file:
+#     src: "{{jira[jira_version].install_path}}"
+#     dest: "{{jira[jira_version].link_path}}"
+#     state: link
+#     owner: jira
+#     group: jira
+#   tags:
+#     - create-jira-link
+
+# - name: Chown Install directory
+#   become: true
+#   file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
+#   tags:
+#     - chown-install-dir
+
+# - name: Start Jira
+#   become: true
+#   systemd:
+#     name: jira
+#     state: started
+#   register: result
+#   retries: 3
+#   delay: 10
+#   until: result is not failed
+#   tags:
+#     - start-jira

@@ -1,5 +1,6 @@
 ---
-- hosts: jira-servers
+- name: Install Jira on First node
+  hosts: jira-cluster-members:children
   roles:
     - openjdk
     - jira

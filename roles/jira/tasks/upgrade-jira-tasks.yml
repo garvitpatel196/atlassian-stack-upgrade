@@ -28,6 +28,9 @@
     jira_version: "{{upgrade_version}}"
 
 - import_tasks: install-jira.yml
+  when: inventory_hostname == 'jira1'
+
+- import_tasks: add-cluster-node.yml
 
 - name: Copy server.xml file
   become: true

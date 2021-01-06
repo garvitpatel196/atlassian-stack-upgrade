@@ -1,30 +1,7 @@
 ---
-- name: Get jira_version_value
-  debug: msg={{ jira_version }}
-- name: Create Jira user
-  become: true
-  user:
-    name: jira
-    create_home: yes
-    state: present
-  tags:
-    - create-jira-user
+- import_tasks: common-tasks.yml
 
-- name: Create Jira Installation directory if not exists
-  become: true
-  file: path={{jira[jira_version].install_path}} owner=jira group=jira state=directory recurse=yes
-  tags:
-    - create-jira-install-directory
-
-- name: Create Jira home directory if not exists
-  become: true
-  file: path={{jira[jira_version].home_path}} owner=jira group=jira state=directory recurse=yes
-  tags:
-    - create-jira-home-directory
-
-- name: jira download url
-  debug: msg=" {{jira[jira_version].url}} "
-
+# ---------------------- Installing Jira in First Server--------------------#
 - name: Downloading jira
   become: true
   get_url: url={{jira[jira_version].url}} dest=/opt validate_certs=no
@@ -54,5 +31,53 @@
   tags:
     - copy-server-file
 
+- name: Creating cluster.properties
+  file:
+    path: "{{jira[jira_version].home_path}}/cluster.properties"
+    state: touch
+    owner: jira
+    group: jira
+
+- name: Setting node id in cluster.properties
+  become: true
+  lineinfile:
+    path: '{{jira[jira_version].home_path}}/cluster.properties'
+    regexp: '^jira\.node\.id'
+    line: jira.node.id = {{inventory_hostname}}
+  tags:
+    - set-jira-node-name
+
+- name: Setting shared Home path in cluster.properties
+  become: true
+  lineinfile:
+    path: '{{jira[jira_version].home_path}}/cluster.properties'
+    regexp: '^jira\.shared\.home'
+    line: jira.shared.home = {{jira[jira_version].shared_home_path}}
+  tags:
+    - set-jira-shared-home-config
+
 - import_tasks: conf-jira-system-service.yml
-  when: not is_upgrade | bool
+
+- name: Create symbolic link 
+  become: true
+  file:
+    src: "{{jira[jira_version].install_path}}"
+    dest: "{{jira[jira_version].link_path}}"
+    state: link
+    owner: jira
+    group: jira
+  tags:
+    - create-jira-link
+
+- name: Chown Install directory
+  become: true
+  file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
+
+# ---------------------- Installing Jira in First Server--------------------#
+
+
+
+
+

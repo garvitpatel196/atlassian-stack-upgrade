@@ -1,2 +1,9 @@
-[jira-servers]
-3.237.190.134
+[first-jira-node]
+jira1 ansible_host=3.237.190.134 ansible_user=ec2-user
+
+[other-jira-node]
+jira2 ansible_host=3.219.217.91 ansible_user=ec2-user
+
+[jira-cluster-members:children]
+first-jira-node
+other-jira-node

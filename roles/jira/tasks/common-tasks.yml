@@ -1,0 +1,30 @@
+---
+# ---------------------- Setting Environment for Jira-----------------------#
+- name: Create Jira user
+  become: true
+  user:
+    name: jira
+    create_home: yes
+    state: present
+  tags:
+    - create-jira-user
+
+- name: Create Jira Installation directory if not exists
+  become: true
+  file: path={{jira[jira_version].install_path}} owner=jira group=jira state=directory recurse=yes
+  tags:
+    - create-jira-install-directory
+
+- name: Create Jira home directory if not exists
+  become: true
+  file: path={{jira[jira_version].home_path}} owner=jira group=jira state=directory recurse=yes
+  tags:
+    - create-jira-home-directory
+
+- name: Create Jira shared home directory if not exists
+  become: true
+  file: path={{jira[jira_version].shared_home_path}} owner=jira group=jira state=directory recurse=yes
+  tags:
+    - create-jira-home-directory
+
+# ---------------------- Setting Environment for Jira-----------------------#
