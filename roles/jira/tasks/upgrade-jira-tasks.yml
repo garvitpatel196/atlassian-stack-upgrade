@@ -39,4 +39,5 @@
     dest: '{{jira[jira_version].install_path}}/conf/'
   tags:
     - copy-server-file
+
 # - local_action: lineinfile path=defaults/main.yml regexp='^jira\_version' line='jira_version = {{upgrade_version}}'

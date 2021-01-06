@@ -6,6 +6,6 @@
 
 jira_version: 8.3.2
 upgrade_version: 8.13.2
-is_install: yes
-is_upgrade: no
+is_install: no
+is_upgrade: yes
 add_cluster_nodes: no

@@ -1,7 +1,7 @@
 ---
 
 - import_tasks: install-jira.yml
-  when: is_install | bool
+  when: inventory_hostname == 'jira1' and is_install | bool
 
 - import_tasks: add-cluster-node.yml
   when: add_cluster_nodes | bool
@@ -9,34 +9,25 @@
 - import_tasks: upgrade-jira-tasks.yml
   when: is_upgrade | bool
 
-# - import_tasks: install-jira.yml
-#   when: not is_upgrade | bool
+- name: Chown Install directory
+  become: true
+  file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
+    
+- name: Chown home directory
+  become: true
+  file: path={{jira[jira_version].home_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
 
-# - name: Create symbolic link 
-#   become: true
-#   file:
-#     src: "{{jira[jira_version].install_path}}"
-#     dest: "{{jira[jira_version].link_path}}"
-#     state: link
-#     owner: jira
-#     group: jira
-#   tags:
-#     - create-jira-link
+- name: Chown home directory
+  become: true
+  file: path={{jira[jira_version].shared_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
 
-# - name: Chown Install directory
-#   become: true
-#   file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
-#   tags:
-#     - chown-install-dir
+- set_fact: run_command="ansible -i inventory <hostname> -m systemd -a 'name=jira state=started' -u ec2-user --key-file=../../keys/gpatel-ssh-key --become"
 
-# - name: Start Jira
-#   become: true
-#   systemd:
-#     name: jira
-#     state: started
-#   register: result
-#   retries: 3
-#   delay: 10
-#   until: result is not failed
-#   tags:
-#     - start-jira
+- name: Run below command to start jira on each nodes one by one
+  debug: msg="{{ run_command }}"

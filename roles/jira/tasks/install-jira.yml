@@ -32,6 +32,7 @@
     - copy-server-file
 
 - name: Creating cluster.properties
+  become: true
   file:
     path: "{{jira[jira_version].home_path}}/cluster.properties"
     state: touch
@@ -68,12 +69,6 @@
     group: jira
   tags:
     - create-jira-link
-
-- name: Chown Install directory
-  become: true
-  file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
-  tags:
-    - chown-install-dir
 
 # ---------------------- Installing Jira in First Server--------------------#
 

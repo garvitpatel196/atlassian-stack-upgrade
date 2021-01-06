@@ -8,13 +8,42 @@
     state: stopped
   tags:
     - stop-jira
+
+- name: Creating cluster.properties
+  become: true
+  when: inventory_hostname == 'jira1'
+  file:
+    path: "{{jira[jira_version].home_path}}/cluster.properties"
+    state: touch
+    owner: jira
+    group: jira
+
+- name: Setting node id in cluster.properties
+  become: true
+  when: inventory_hostname == 'jira1'
+  lineinfile:
+    path: '{{jira[jira_version].home_path}}/cluster.properties'
+    regexp: '^jira\.node\.id'
+    line: jira.node.id = {{inventory_hostname}}
+  tags:
+    - set-jira-node-name
+
+- name: Setting shared Home path in cluster.properties
+  become: true
+  when: inventory_hostname == 'jira1'
+  lineinfile:
+    path: '{{jira[jira_version].home_path}}/cluster.properties'
+    regexp: '^jira\.shared\.home'
+    line: jira.shared.home = {{jira[jira_version].shared_home_path}}
+  tags:
+    - set-jira-shared-home-config
 #--------------------- Stop Jira ---------------------------#
 
 - import_tasks: common-tasks.yml
   when: inventory_hostname != 'jira1'
 # -----------------------Coping Installation to Other cluster members---------------------------#
 
-- name: Create tar of current install directory
+- name: Create tar install-server.tgz of current install directory
   become: true
   when: inventory_hostname == 'jira1'
   archive:
@@ -22,20 +51,23 @@
     dest: /data/install-server.tgz
   tags:
     - create-tar-installation
+    - file-copy
 
-- name: Fetch the file from jira-1 to master
+- name: Fetch install-server.tgz from jira-1 to master
   run_once: yes
   fetch: src=/data/install-server.tgz dest=/ flat=yes
   when: inventory_hostname == 'jira1'
   tags:
     - copy-install-between-servers
+    - file-copy
 
-- name: Copy the file from master to other members
+- name: Copy install-server.tgz from master to other members
   become: true
   copy: src=/install-server.tgz dest=/opt/
   when: inventory_hostname != 'jira1'
   tags:
     - copy-install-between-servers
+    - file-copy
 
 - name: Extract jira
   become: true
@@ -46,7 +78,7 @@
 # -----------------------Coping Installation to Other cluster members---------------------------#
 
 # -----------------------Coping Local Home to Other cluster members---------------------------#
-- name: Create tar of current install directory
+- name: Create tar jira-home.tgz of current Home directory
   become: true
   when: inventory_hostname == 'jira1'
   archive:
@@ -54,20 +86,23 @@
     dest: /data/jira-home.tgz
   tags:
     - create-tar-installation
+    - file-copy
 
-- name: Fetch the file from the jira-1 to master
+- name: Fetch jira-home.tgz from the jira-1 to master
   run_once: yes
   fetch: src=/data/jira-home.tgz dest=/ flat=yes
   when: inventory_hostname == 'jira1'
   tags:
     - copy-home-between-servers
+    - file-copy
 
-- name: Copy the file from master to Jira-2
+- name: Copy jira-home.tgz from master to Jira-2
   become: true
   copy: src=/jira-home.tgz dest=/data/
   when: inventory_hostname != 'jira1'
   tags:
     - copy-home-between-servers
+    - file-copy
 
 - name: Extract jira
   become: true
@@ -75,6 +110,7 @@
   command: tar -xvzf /data/jira-home.tgz -C {{jira[jira_version].home_path}} --strip-components=1 creates={{jira[jira_version].home_path}}/bin
   tags:
     -  extract-jira-home
+    
 # -----------------------Coping Local Home to Other cluster members---------------------------#
 - import_tasks: conf-jira-system-service.yml
   when: inventory_hostname != 'jira1'
@@ -100,7 +136,3 @@
   tags:
     - set-jira-node-name
 
-- set_fact: run_command="ansible -i inventory <hostname> -m systemd -a 'name=jira state=started' -u ec2-user --key-file=../../keys/gpatel-ssh-key --become"
-
-- name: Run below command to start jira on each nodes one by one
-  debug: msg="{{ run_command.stdout }}"
