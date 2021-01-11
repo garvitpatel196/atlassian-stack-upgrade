@@ -24,6 +24,7 @@
     - set-jira-service-paths
 
 - name: Set Start file path
+
   become: true
   lineinfile:
     path: /lib/systemd/system/jira.service

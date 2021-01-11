@@ -9,24 +9,6 @@
 - import_tasks: upgrade-jira-tasks.yml
   when: is_upgrade | bool
 
-- name: Chown Install directory
-  become: true
-  file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
-  tags:
-    - chown-install-dir
-    
-- name: Chown home directory
-  become: true
-  file: path={{jira[jira_version].home_path}} owner=jira group=jira recurse=yes
-  tags:
-    - chown-install-dir
-
-- name: Chown home directory
-  become: true
-  file: path={{jira[jira_version].shared_path}} owner=jira group=jira recurse=yes
-  tags:
-    - chown-install-dir
-
 - set_fact: run_command="ansible -i inventory <hostname> -m systemd -a 'name=jira state=started' -u ec2-user --key-file=../../keys/gpatel-ssh-key --become"
 
 - name: Run below command to start jira on each nodes one by one

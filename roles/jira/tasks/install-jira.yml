@@ -57,6 +57,15 @@
   tags:
     - set-jira-shared-home-config
 
+- name: Setting ulimit in <Jira-install>/bin/setenv.sh
+  become: true
+  lineinfile:
+    path: '{{jira[jira_version].install_path}}/bin/setenv.sh'
+    regexp: '^ulimit'
+    line: ulimit -n 16384
+  tags:
+    - set-jira-shared-home-config
+
 - import_tasks: conf-jira-system-service.yml
 
 - name: Create symbolic link 
@@ -74,5 +83,21 @@
 
 
 
+- name: Chown Install directory
+  become: true
+  file: path={{jira[jira_version].install_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
+    
+- name: Chown home directory
+  become: true
+  file: path={{jira[jira_version].home_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
 
+- name: Chown home directory
+  become: true
+  file: path={{jira[jira_version].shared_home_path}} owner=jira group=jira recurse=yes
+  tags:
+    - chown-install-dir
 
