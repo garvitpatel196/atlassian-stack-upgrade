@@ -21,7 +21,7 @@
   tags:
     - chown-install-dir
 
-- name: Chown home directory
+- name: Chown Shared home directory
   become: true
   file: path={{jira[jira_version].shared_path}} owner=jira group=jira recurse=yes
   tags:
