@@ -27,7 +27,7 @@
   tags:
     - chown-install-dir
 
-- set_fact: run_command="ansible -i inventory <hostname> -m systemd -a 'name=jira state=started' -u ec2-user --key-file=../../keys/gpatel-ssh-key --become"
+- set_fact: run_command="ansible -i inventory <hostname> -m systemd -a 'name=jira state=started' -u <username> --key-file=<private-key-file> --become"
 
 - name: Run below command to start jira on each nodes one by one
   debug: msg="{{ run_command }}"
