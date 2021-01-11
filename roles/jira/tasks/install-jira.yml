@@ -1,6 +1,4 @@
 ---
-- import_tasks: common-tasks.yml
-
 # ---------------------- Installing Jira in First Server--------------------#
 - name: Downloading jira
   become: true

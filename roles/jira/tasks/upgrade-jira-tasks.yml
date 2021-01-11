@@ -19,13 +19,15 @@
   become: true
   archive:
     path: "{{jira[jira_version].home_path}}"
-    dest: /data//backup-home-{{jira_version}}.tgz
+    dest: /data/backup-home-{{jira_version}}.tgz
   tags:
     - backup-old-jira
 
 - name: Change jira_version to new version
   set_fact:
     jira_version: "{{upgrade_version}}"
+
+- import_tasks: common-tasks.yml
 
 - import_tasks: install-jira.yml
   when: inventory_hostname == 'jira1'

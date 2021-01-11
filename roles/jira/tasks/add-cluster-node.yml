@@ -72,7 +72,7 @@
 - name: Extract jira
   become: true
   when: inventory_hostname != 'jira1'
-  command: tar -xvzf /opt/install-server.tgz -C {{jira[jira_version].install_path}} --strip-components=1 creates={{jira[jira_version].install_path}}/bin
+  command: tar -xvzf /opt/install-server.tgz -C {{jira[jira_version].install_path}} --strip-components=1
   tags:
     - extract-jira-install
 # -----------------------Coping Installation to Other cluster members---------------------------#

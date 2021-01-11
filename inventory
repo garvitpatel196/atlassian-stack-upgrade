@@ -1,5 +1,5 @@
 [first-jira-node]
-jira1 ansible_host=3.89.81.163 ansible_user=ec2-user
+jira1 ansible_host=3.238.188.108 ansible_user=ec2-user
 
 [other-jira-node]
 jira2 ansible_host=3.232.107.97 ansible_user=ec2-user
